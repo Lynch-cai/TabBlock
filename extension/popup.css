@@ -1,0 +1,228 @@
+:root {
+  --red: #C8291F;
+  --red-dark: #BD241F;
+  --white: #FFFFFF;
+  --bg: #FFFFFF;
+  --surface: #FBEDEC;
+  --text: #1D1D1F;
+  --muted: #6B6B70;
+  --border: #E7C9C7;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #1E1E1E; --surface: #2A2A2A; --text: #FFFFFF; --muted: #B5B5B5; --border: #4A4A4A; }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  width: 320px;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+p { margin: 0; }
+[hidden] { display: none !important; }
+button { font: inherit; color: inherit; }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px 8px;
+}
+.brand { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.donate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.donate:hover { border-color: var(--red); background: var(--surface); }
+.donate:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+@media (prefers-color-scheme: dark) {
+  .donate { color: #FF8A80; }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 24px 28px;
+  text-align: center;
+}
+.host {
+  max-width: 100%;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.counters { display: flex; flex-direction: column; align-items: center; }
+.counters[hidden] { display: none; }
+.blocked { margin-top: 10px; font-size: 26px; font-weight: 700; }
+.total {
+  margin-top: 6px;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Big signature switch: a white knob larger than its pill track. */
+.switch {
+  position: relative;
+  display: block;
+  width: 108px;
+  height: 56px;
+  margin: 28px 0 18px;
+  cursor: pointer;
+}
+.switch input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.track {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  background: var(--border);
+  transition: background-color 0.2s;
+}
+.knob {
+  position: absolute;
+  top: -8px;
+  left: -4px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--red);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
+  transition: transform 0.2s;
+}
+.knob svg { opacity: 0; transition: opacity 0.2s; }
+.switch input:checked + .track { background: var(--red); }
+.switch input:checked + .track .knob { transform: translateX(52px); }
+.switch input:checked + .track .knob svg { opacity: 1; }
+.switch:hover input:checked:not(:disabled) + .track { background: var(--red-dark); }
+.switch input:focus-visible + .track { outline: 2px solid var(--red); outline-offset: 10px; }
+.switch:has(input:disabled) { cursor: not-allowed; opacity: 0.45; }
+
+.status { font-size: 14px; color: var(--muted); }
+.status.on { color: var(--text); font-weight: 600; }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 24px;
+  border: 0;
+  background: var(--surface);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.footer::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.footer:hover { background: var(--border); }
+.footer:focus-visible, .back:focus-visible, .remove:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; }
+
+/* Protected sites screen */
+.sites { padding: 8px 0 16px; }
+.sites-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 16px 12px;
+}
+.sites-head h2 { margin: 0; font-size: 18px; }
+.back {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+.back:hover { background: var(--surface); }
+.site-list { margin: 0; padding: 0 16px; list-style: none; }
+.site-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.site-list li:last-child { border-bottom: 0; }
+.site-text { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.site-name { font-weight: 600; overflow-wrap: anywhere; }
+.site-count { font-size: 13px; color: var(--muted); }
+.remove {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+.remove:hover { border-color: var(--red); color: var(--red); }
+.sites-empty { padding: 24px 32px; color: var(--muted); text-align: center; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Firefox / Safari: shown when the user has not granted access to this site yet. */
+.grant {
+  margin-top: 16px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--red);
+  color: var(--white);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.grant:hover { background: var(--red-dark); }
+.grant:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.grant[hidden] { display: none; }

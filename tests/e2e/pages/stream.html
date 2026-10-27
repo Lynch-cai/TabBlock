@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Stream</title>
+<h1>Faux site de streaming</h1>
+<!-- Popunder: the first click on the player opens an ad, the click still reaches the player -->
+<div id="player" style="width:320px;height:180px;background:#000;color:#fff">player</div>
+<script>
+  const player = document.getElementById('player');
+  player.addEventListener('click', () => window.open('http://127.0.0.1:4517/ad.html'));
+  player.addEventListener('click', () => (player.dataset.played = 'yes'));
+</script>
+<button id="blank-popup" onclick="window.open('').location = 'http://127.0.0.1:4517/ad.html?blank'">blank popup</button>
+<button id="redirect" onclick="setTimeout(() => (location.href = 'http://127.0.0.1:4517/ad.html?redirect'))">redirect</button>
+<a id="legit-blank" href="http://127.0.0.1:4517/legit.html" target="_blank">lien externe nouvel onglet</a>
+<a id="legit-self" href="http://127.0.0.1:4517/legit.html">lien externe meme onglet</a>
+<a id="same-site" href="/legit.html?same" target="_blank">lien interne nouvel onglet</a>
+<iframe id="player-frame" src="http://127.0.0.1:4517/player.html"></iframe>

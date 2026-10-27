@@ -1,0 +1,19 @@
+{
+  "name": "tabblock",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:unit": "node --test \"tests/unit/*.test.js\"",
+    "test:e2e": "playwright test",
+    "test": "npm run test:unit && npm run test:e2e",
+    "build": "node scripts/build.js",
+    "lint:firefox": "web-ext lint --source-dir dist/firefox",
+    "start:firefox": "web-ext run --source-dir dist/firefox --firefox /Applications/Firefox.app/Contents/MacOS/firefox --start-url http://localhost:4517/stream.html",
+    "safari:convert": "xcrun safari-web-extension-converter dist/safari --project-location safari --app-name TabBlock --bundle-identifier io.github.lynch-cai.TabBlock --macos-only --no-open --no-prompt"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "web-ext": "^10.8.0"
+  }
+}

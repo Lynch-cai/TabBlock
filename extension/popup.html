@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>TabBlock</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="header">
+    <img src="icons/logo.png" alt="" width="28" height="28">
+    <span class="brand">TabBlock</span>
+    <a class="donate" href="https://ko-fi.com/lynch_" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.1A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.8c0 5.5-7.5 10.1-7.5 10.1z" fill="currentColor"/></svg>
+      Soutenir
+    </a>
+  </header>
+
+  <main id="home" class="main">
+    <p id="host" class="host"></p>
+    <div id="counters" class="counters">
+      <p class="blocked">Bloqués : <span id="tab-count">0</span></p>
+      <p class="total">Total bloqué : <span id="total-count">0</span></p>
+    </div>
+
+    <label class="switch">
+      <input id="toggle" type="checkbox" role="switch">
+      <span class="track" aria-hidden="true">
+        <span class="knob">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </span>
+      <span class="sr-only">Protection sur ce site</span>
+    </label>
+
+    <p id="status" class="status" aria-live="polite"></p>
+    <button id="grant" class="grant" type="button" hidden>Autoriser TabBlock sur ce site</button>
+  </main>
+
+  <button id="footer" class="footer" type="button"></button>
+
+  <section id="sites-view" class="sites" hidden>
+    <div class="sites-head">
+      <button id="back" class="back" type="button" aria-label="Retour">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h2>Sites protégés</h2>
+    </div>
+    <ul id="site-list" class="site-list"></ul>
+    <p id="sites-empty" class="sites-empty" hidden>Aucun site protégé pour l'instant. Activez l'interrupteur sur un site pour l'ajouter ici.</p>
+  </section>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
