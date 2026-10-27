@@ -1,0 +1,23 @@
+{
+  "locale": { "message": "en" },
+  "description": { "message": "Closes ad tabs and cancels ad redirects on the sites you protect." },
+  "donate": { "message": "Support" },
+  "source": { "message": "Source code on GitHub" },
+  "blocked": { "message": "Blocked: " },
+  "totalBlocked": { "message": "Total blocked: " },
+  "protectSite": { "message": "Protection on this site" },
+  "grant": { "message": "Allow TabBlock on this site" },
+  "back": { "message": "Back" },
+  "protectedSites": { "message": "Protected sites" },
+  "sitesEmpty": { "message": "No protected sites yet. Turn on the switch on a site to add it here." },
+  "unsupported": { "message": "Unsupported page" },
+  "cannotAct": { "message": "TabBlock can't act on this page." },
+  "on": { "message": "Protection on" },
+  "off": { "message": "Protection off" },
+  "remove": { "message": "Remove" },
+  "removeSite": { "message": "Remove $1" },
+  "siteBlocked_one": { "message": "$1 blocked" },
+  "siteBlocked_other": { "message": "$1 blocked" },
+  "sitesProtected_one": { "message": "$1 protected site" },
+  "sitesProtected_other": { "message": "$1 protected sites" }
+}

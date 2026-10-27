@@ -57,24 +57,14 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 
 // Kept synchronous: for window.open('') the popup's next onBeforeNavigate can fire
 // before any await here resolves, so `pending` must be filled right away.
-function onPopupOpened({ sourceTabId, tabId, url }) {
+chrome.webNavigation.onCreatedNavigationTarget.addListener(({ sourceTabId, tabId, url }) => {
   const sourceHost = chrome.tabs.get(sourceTabId).then((t) => protectedHost(t.url), () => null);
   if (!url || url === 'about:blank') {
     pending.set(tabId, { sourceTabId, sourceHost });
     return;
   }
   decidePopup(tabId, sourceTabId, sourceHost, url);
-}
-
-// ponytail: Safari has neither onCreatedNavigationTarget nor onCommitted's transitionType, so
-// popups are caught through tabs.onCreated + openerTabId, and redirects are never undone there.
-if (chrome.webNavigation.onCreatedNavigationTarget) {
-  chrome.webNavigation.onCreatedNavigationTarget.addListener(onPopupOpened);
-} else {
-  chrome.tabs.onCreated.addListener(({ id, openerTabId, pendingUrl, url }) => {
-    if (openerTabId != null) onPopupOpened({ sourceTabId: openerTabId, tabId: id, url: pendingUrl || url });
-  });
-}
+});
 
 chrome.webNavigation.onBeforeNavigate.addListener(({ tabId, frameId, url }) => {
   if (frameId !== 0) return;

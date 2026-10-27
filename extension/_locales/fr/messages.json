@@ -1,0 +1,23 @@
+{
+  "locale": { "message": "fr" },
+  "description": { "message": "Ferme les onglets et annule les redirections publicitaires sur les sites que vous protégez." },
+  "donate": { "message": "Soutenir" },
+  "source": { "message": "Code source sur GitHub" },
+  "blocked": { "message": "Bloqués : " },
+  "totalBlocked": { "message": "Total bloqué : " },
+  "protectSite": { "message": "Protection sur ce site" },
+  "grant": { "message": "Autoriser TabBlock sur ce site" },
+  "back": { "message": "Retour" },
+  "protectedSites": { "message": "Sites protégés" },
+  "sitesEmpty": { "message": "Aucun site protégé pour l'instant. Activez l'interrupteur sur un site pour l'ajouter ici." },
+  "unsupported": { "message": "Page non supportée" },
+  "cannotAct": { "message": "TabBlock ne peut pas agir sur cette page." },
+  "on": { "message": "Protection activée" },
+  "off": { "message": "Protection désactivée" },
+  "remove": { "message": "Retirer" },
+  "removeSite": { "message": "Retirer $1" },
+  "siteBlocked_one": { "message": "$1 bloqué" },
+  "siteBlocked_other": { "message": "$1 bloqués" },
+  "sitesProtected_one": { "message": "$1 site protégé" },
+  "sitesProtected_other": { "message": "$1 sites protégés" }
+}

@@ -1,5 +1,5 @@
 // One source (extension/), one build per browser family: only the manifest differs.
-// Usage: node scripts/build.js [chrome|firefox|safari]
+// Usage: node scripts/build.js [chrome|firefox]
 import fs from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
@@ -24,9 +24,7 @@ const targets = {
       },
     };
   },
-  safari: (m) => ({ ...m, browser_specific_settings: { safari: { strict_min_version: '16.4' } } }), // storage.session + module SW
 };
-const zipped = ['chrome', 'firefox']; // Safari ships through Xcode, not a zip
 
 const manifest = JSON.parse(await fs.readFile(path.join(src, 'manifest.json'), 'utf8'));
 const wanted = process.argv[2] ? [process.argv[2]] : Object.keys(targets);
@@ -37,10 +35,8 @@ for (const target of wanted) {
   await fs.rm(out, { recursive: true, force: true });
   await fs.cp(src, out, { recursive: true });
   await fs.writeFile(path.join(out, 'manifest.json'), JSON.stringify(targets[target](manifest), null, 2) + '\n');
-  if (zipped.includes(target)) {
-    const zip = path.join(dist, `tabblock-${target}-${manifest.version}.zip`);
-    await fs.rm(zip, { force: true });
-    execFileSync('zip', ['-qr', zip, '.'], { cwd: out }); // cwd = target dir so manifest.json sits at the zip root
-  }
+  const zip = path.join(dist, `tabblock-${target}-${manifest.version}.zip`);
+  await fs.rm(zip, { force: true });
+  execFileSync('zip', ['-qr', zip, '.'], { cwd: out }); // cwd = target dir so manifest.json sits at the zip root
   console.log(`built dist/${target}`);
 }

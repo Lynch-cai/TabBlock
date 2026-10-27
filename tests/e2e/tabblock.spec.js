@@ -193,3 +193,11 @@ test('popup : lien de soutien Ko-fi', async ({ context, extensionId }) => {
   await expect(donate).toHaveAttribute('href', 'https://ko-fi.com/lynch_');
   await expect(donate).toHaveAttribute('target', '_blank');
 });
+
+test('popup : lien vers le code source GitHub', async ({ context, extensionId }) => {
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+  const source = popup.getByRole('link', { name: 'Code source sur GitHub' });
+  await expect(source).toHaveAttribute('href', 'https://github.com/Lynch-cai/TabBlock');
+  await expect(source).toHaveAttribute('target', '_blank');
+});
