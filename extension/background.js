@@ -42,7 +42,8 @@ async function allowedAfterRace(check) {
   return check();
 }
 
-async function decidePopup(tabId, sourceTabId, sourceHostPromise, url, serverRedirect = false) {
+// `redirect`: the popup is already open, so the click that opened it is known: no race wait.
+async function decidePopup(tabId, sourceTabId, sourceHostPromise, url, { serverRedirect = false, redirect = false } = {}) {
   const sourceHost = await sourceHostPromise;
   if (!sourceHost) return;
   const check = () =>
@@ -53,7 +54,7 @@ async function decidePopup(tabId, sourceTabId, sourceHostPromise, url, serverRed
       now: Date.now(),
       serverRedirect,
     });
-  if (await allowedAfterRace(check)) return;
+  if (redirect ? check() : await allowedAfterRace(check)) return;
   // Creation and commit can both decide the same popup: only the remove that succeeds counts.
   try {
     await chrome.tabs.remove(tabId);
@@ -91,6 +92,16 @@ chrome.webNavigation.onBeforeNavigate.addListener(({ tabId, frameId, url }) => {
   }
 });
 
+// Server redirects of a popup are judged as soon as the redirect response arrives,
+// before the ad page loads. onCommitted still covers JS redirects.
+chrome.webRequest.onBeforeRedirect.addListener(
+  ({ tabId, redirectUrl }) => {
+    const popup = popups.get(tabId);
+    if (popup) decidePopup(tabId, popup.sourceTabId, popup.sourceHost, redirectUrl, { serverRedirect: true, redirect: true });
+  },
+  { urls: ['<all_urls>'], types: ['main_frame'] },
+);
+
 chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url, transitionType, transitionQualifiers }) => {
   if (frameId !== 0) return;
   // Previous committed URL, kept in session storage: tab.url is already the new page by
@@ -103,7 +114,7 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url, trans
   if (popup && url !== 'about:blank') {
     if (!popup.committed || serverRedirect || transitionQualifiers.includes('client_redirect')) {
       popup.committed = true;
-      return decidePopup(tabId, popup.sourceTabId, popup.sourceHost, url, serverRedirect);
+      return decidePopup(tabId, popup.sourceTabId, popup.sourceHost, url, { serverRedirect, redirect: true });
     }
     popups.delete(tabId);
   }

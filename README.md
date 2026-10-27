@@ -177,6 +177,7 @@ TabBlock runs **100% locally**. It never sends anything anywhere.
 | --------------- | ---------------------------------------------------------- |
 | `tabs`          | Read the URL of the current tab, close unwanted tabs       |
 | `webNavigation` | Detect new tabs and redirects as they happen               |
+| `webRequest`    | See a pop-up's server redirect before the ad page loads (read-only, nothing is blocked or modified) |
 | `storage`       | Remember your protected sites and the counters             |
 | `<all_urls>`    | Detect your clicks on any site you choose to protect (content script + `host_permissions`, so Firefox can grant site access from the popup) |
 
