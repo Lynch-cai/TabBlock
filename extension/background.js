@@ -1,9 +1,12 @@
-import { siteKey, isProtected, shouldAllowPopup, shouldAllowNavigation } from './lib.js';
+import { siteKey, isProtected, shouldAllowNavigation } from './lib.js';
 
 // ponytail: popups are closed after they open (the ad tab may flash briefly). Patching
 // window.open would miss popups fired from cross-origin player iframes.
 const intents = new Map(); // tabId -> { href, t } : last real click in that tab
 const pending = new Map(); // tabId -> { sourceTabId, sourceHost } : popup opened on about:blank
+// Popups judged again on every redirect: a same-site popup (api.site.com/go?...) can
+// redirect to the ad. Dropped once the popup settles and the user navigates in it.
+const popups = new Map(); // tabId -> { sourceTabId, sourceHost, committed }
 const INTENT_RACE_MS = 150;
 
 chrome.action.setBadgeBackgroundColor({ color: '#C8291F' });
@@ -39,13 +42,24 @@ async function allowedAfterRace(check) {
   return check();
 }
 
-async function decidePopup(tabId, sourceTabId, sourceHostPromise, url) {
+async function decidePopup(tabId, sourceTabId, sourceHostPromise, url, serverRedirect = false) {
   const sourceHost = await sourceHostPromise;
   if (!sourceHost) return;
   const check = () =>
-    shouldAllowPopup({ sourceHost, targetUrl: url, intent: intents.get(sourceTabId), now: Date.now() });
+    shouldAllowNavigation({
+      fromHost: sourceHost,
+      targetUrl: url,
+      intent: intents.get(sourceTabId),
+      now: Date.now(),
+      serverRedirect,
+    });
   if (await allowedAfterRace(check)) return;
-  await chrome.tabs.remove(tabId).catch(() => {});
+  // Creation and commit can both decide the same popup: only the remove that succeeds counts.
+  try {
+    await chrome.tabs.remove(tabId);
+  } catch {
+    return;
+  }
   await countBlocked(sourceTabId, sourceHost);
 }
 
@@ -59,6 +73,7 @@ chrome.runtime.onMessage.addListener((msg, sender) => {
 // before any await here resolves, so `pending` must be filled right away.
 chrome.webNavigation.onCreatedNavigationTarget.addListener(({ sourceTabId, tabId, url }) => {
   const sourceHost = chrome.tabs.get(sourceTabId).then((t) => protectedHost(t.url), () => null);
+  popups.set(tabId, { sourceTabId, sourceHost, committed: false });
   if (!url || url === 'about:blank') {
     pending.set(tabId, { sourceTabId, sourceHost });
     return;
@@ -83,6 +98,15 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url, trans
   const key = 'url:' + tabId;
   const { [key]: fromUrl } = await chrome.storage.session.get(key);
   await chrome.storage.session.set({ [key]: url });
+  const popup = popups.get(tabId);
+  const serverRedirect = transitionQualifiers.includes('server_redirect');
+  if (popup && url !== 'about:blank') {
+    if (!popup.committed || serverRedirect || transitionQualifiers.includes('client_redirect')) {
+      popup.committed = true;
+      return decidePopup(tabId, popup.sourceTabId, popup.sourceHost, url, serverRedirect);
+    }
+    popups.delete(tabId);
+  }
   const fromHost = await protectedHost(fromUrl);
   if (!fromHost || transitionType !== 'link' || transitionQualifiers.includes('forward_back')) return;
   const check = () =>
@@ -91,7 +115,7 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url, trans
       targetUrl: url,
       intent: intents.get(tabId),
       now: Date.now(),
-      serverRedirect: transitionQualifiers.includes('server_redirect'),
+      serverRedirect,
     });
   if (await allowedAfterRace(check)) return;
   await chrome.tabs.goBack(tabId).catch(() => {});
@@ -101,5 +125,6 @@ chrome.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url, trans
 chrome.tabs.onRemoved.addListener((tabId) => {
   intents.delete(tabId);
   pending.delete(tabId);
+  popups.delete(tabId);
   chrome.storage.session.remove(['blocked:' + tabId, 'url:' + tabId]);
 });

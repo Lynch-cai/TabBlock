@@ -37,6 +37,22 @@ test.describe('site protege', () => {
     await expect.poll(() => context.pages().length).toBe(before);
   });
 
+  for (const id of ['go-server', 'go-js']) {
+    test(`popup same-site qui redirige vers la pub ferme (${id})`, async ({ page, context, serviceWorker }) => {
+      const before = context.pages().length;
+      await page.click(`#${id}`);
+      await expect.poll(() => totalBlocked(serviceWorker)).toBe(1);
+      await expect.poll(() => context.pages().length).toBe(before);
+    });
+  }
+
+  test('lien /go?to= clique en nouvel onglet aboutit', async ({ page, context, serviceWorker }) => {
+    const [legit] = await Promise.all([context.waitForEvent('page'), page.click('#go-link')]);
+    await expect(legit).toHaveURL(`${OTHER}/legit.html?go`);
+    await adBarrier(page, serviceWorker, 1);
+    expect(legit.isClosed()).toBe(false);
+  });
+
   test('lien externe target=_blank clique reste ouvert', async ({ page, context, serviceWorker }) => {
     const [legit] = await Promise.all([context.waitForEvent('page'), page.click('#legit-blank')]);
     await legit.waitForLoadState();

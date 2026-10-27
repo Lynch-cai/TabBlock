@@ -10,6 +10,9 @@
   player.addEventListener('click', () => (player.dataset.played = 'yes'));
 </script>
 <button id="blank-popup" onclick="window.open('').location = 'http://127.0.0.1:4517/ad.html?blank'">blank popup</button>
+<button id="go-server" onclick="window.open('/go?to=http://127.0.0.1:4517/ad.html?go')">pub via redirecteur 302</button>
+<button id="go-js" onclick="window.open('/go?js=http://127.0.0.1:4517/ad.html?go')">pub via redirecteur JS</button>
+<a id="go-link" href="/go?to=http://127.0.0.1:4517/legit.html?go" target="_blank">lien /go clique</a>
 <button id="redirect" onclick="setTimeout(() => (location.href = 'http://127.0.0.1:4517/ad.html?redirect'))">redirect</button>
 <a id="legit-blank" href="http://127.0.0.1:4517/legit.html" target="_blank">lien externe nouvel onglet</a>
 <a id="legit-self" href="http://127.0.0.1:4517/legit.html">lien externe meme onglet</a>
