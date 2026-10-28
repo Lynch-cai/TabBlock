@@ -21,6 +21,7 @@ const targets = {
           strict_min_version: '140.0', // data_collection_permissions; also covers storage.session (115) and module background (112)
           data_collection_permissions: { required: ['none'] },
         },
+        gecko_android: { strict_min_version: '142.0' }, // data_collection_permissions landed later on Android
       },
     };
   },
